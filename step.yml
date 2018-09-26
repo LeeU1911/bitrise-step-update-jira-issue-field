@@ -76,6 +76,7 @@ inputs:
         (Optional) If this is set to true any request failure will only be logged and ignored. Might be useful in cases where there is no guarantee for a JIRA issue.
       is_expand: false
       value_options: ["false", "true"]
+      is_dont_change_value: false
 
   - issue_id_or_key_list:
     opts:
