@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strconv"
 
 	"bytes"
 	"encoding/json"
@@ -20,13 +21,14 @@ import (
 
 // ConfigsModel ...
 type ConfigsModel struct {
-	JiraUsername     string
-	JiraPassword     string
-	JiraCookie       string
-	JiraInstanceURL  string
-	IssueIDOrKeyList []string
-	FieldKey         string
-	FieldValue       string
+	JiraUsername             string
+	JiraPassword             string
+	JiraCookie               string
+	JiraInstanceURL          string
+	JiraIgnoreRequestFailure bool
+	IssueIDOrKeyList         []string
+	FieldKey                 string
+	FieldValue               string
 }
 
 func main() {
@@ -107,7 +109,12 @@ func updateIssue(configs ConfigsModel, issueIDOrKey string, body []byte) error {
 		} else {
 			log.Warnf("JIRA API response: %s", contents)
 		}
-		return errors.New("JIRA API request failed")
+
+		if (configs.JiraIgnoreRequestFailure) {
+			log.Warnf("JIRA API request failed. Ignore JIRA API request is enabled.")
+		} else {
+			return errors.New("JIRA API request failed")
+		}
 	}
 
 	log.Infof("Issue %s updated successfully", issueIDOrKey)
@@ -130,14 +137,21 @@ func performRequests(configs ConfigsModel) error {
 }
 
 func createConfigsModelFromEnvs() ConfigsModel {
+	jiraIgnoreRequestFailure, err := strconv.ParseBool(os.Getenv("jira_ignore_request_failure"))
+
+	if err != nil {
+		log.Warnf("Could not determine JIRA API ignore request failure flag - falling back to disabled.")
+	}
+
 	configs := ConfigsModel{
-		JiraUsername:     os.Getenv("jira_username"),
-		JiraPassword:     os.Getenv("jira_password"),
-		JiraCookie:       os.Getenv("jira_cookie"),
-		JiraInstanceURL:  os.Getenv("jira_instance_url"),
-		IssueIDOrKeyList: strings.Split(os.Getenv("issue_id_or_key_list"), "|"),
-		FieldKey:         os.Getenv("field_key"),
-		FieldValue:       os.Getenv("field_value"),
+		JiraUsername:             os.Getenv("jira_username"),
+		JiraPassword:             os.Getenv("jira_password"),
+		JiraCookie:               os.Getenv("jira_cookie"),
+		JiraInstanceURL:          os.Getenv("jira_instance_url"),
+		JiraIgnoreRequestFailure: jiraIgnoreRequestFailure,
+		IssueIDOrKeyList:         strings.Split(os.Getenv("issue_id_or_key_list"), "|"),
+		FieldKey:                 os.Getenv("field_key"),
+		FieldValue:               os.Getenv("field_value"),
 	}
 	for i, idOrKey := range configs.IssueIDOrKeyList {
 		configs.IssueIDOrKeyList[i] = strings.TrimSpace(idOrKey)

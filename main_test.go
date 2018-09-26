@@ -55,11 +55,12 @@ func TestValidateConfigValidCookie(t *testing.T) {
 
 func createDummyConfigs() ConfigsModel {
 	return ConfigsModel{
-		JiraUsername:     "login",
-		JiraPassword:     "password",
-		JiraInstanceURL:  "http://jira.invalid",
-		IssueIDOrKeyList: []string{"TEST-1"},
-		FieldKey:         "test",
-		FieldValue:       "this is a test",
+		JiraUsername:             "login",
+		JiraPassword:             "password",
+		JiraInstanceURL:          "http://jira.invalid",
+		JiraIgnoreRequestFailure: true,
+		IssueIDOrKeyList:         []string{"TEST-1"},
+		FieldKey:                 "test",
+		FieldValue:               "this is a test",
 	}
 }

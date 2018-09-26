@@ -68,6 +68,15 @@ inputs:
       is_expand: true
       is_required: true
 
+  - jira_ignore_request_failure:
+    opts:
+      title: "JIRA ignore request failure"
+      summary: Defaults to false.
+      description: |
+        If this is set to true any request failure will only be logged and ignored. Might be useful in cases where there is no guarantee for a JIRA issue.
+      is_expand: false
+      is_required: false
+
   - issue_id_or_key_list:
     opts:
       title: "List of issue ids or keys"
