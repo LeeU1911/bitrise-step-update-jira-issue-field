@@ -112,6 +112,7 @@ func updateIssue(configs ConfigsModel, issueIDOrKey string, body []byte) error {
 
 		if (configs.JiraIgnoreRequestFailure) {
 			log.Warnf("JIRA API request failed. Ignore JIRA API request is enabled.")
+			return nil
 		} else {
 			return errors.New("JIRA API request failed")
 		}
